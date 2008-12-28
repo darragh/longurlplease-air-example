@@ -1,0 +1,7 @@
+Basic example of using longurlplease.com webservice to lengthen short urls in an air application.
+
+To run from the command line (assuming Adobe AIR SDK is installed):
+
+1.   cd <directory containing this README>
+2.   adl application.xml .
+

@@ -42,7 +42,7 @@ var longurlplease = {
                 });
               }
               );
-      var request = new air.URLRequest("http://localhost:8080/api/v1.1?ua=air&" + paramString);
+      var request = new air.URLRequest("http://www.longurlplease.com/api/v1.1?ua=air&" + paramString);
       loader.load(request);
       i = i + 4;
     }
