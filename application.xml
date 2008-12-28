@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<application xmlns="http://ns.adobe.com/air/application/1.0">
+	<id>com.example.ExampleApplication</id>
+	<name>Long URL Please AIR Example</name>
+	<version>1.0</version>
+	<filename>Long URL Please AIR Example</filename>
+	<description>A simple example of using the longurlplease.com web service from within an AJAX based AIR application.</description>
+	<initialWindow>
+		<title>Long URL Please AIR Example</title>
+		<content>longurlplease.html</content>
+		<systemChrome>standard</systemChrome>
+		<transparent>false</transparent>
+    	<visible>true</visible>
+		<width>640</width>
+		<height>480</height>
+	</initialWindow>
+</application>
