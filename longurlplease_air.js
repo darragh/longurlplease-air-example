@@ -1,5 +1,7 @@
 var longurlplease = {
+  // At the moment clients must maintain a list of services which they will attempt to lengthen short urls for
   shortUrlsPattern : new RegExp("^http(s?)://(adjix\\.com|bit\\.ly|dwarfurl\\.com|ff\\.im|idek\\.net|is\\.gd|ln-s\\.net|loopt\\.us|ping\\.fm|piurl\\.com|piurl\\.com|poprl\\.com|qlnk\\.net|reallytinyurl\\.com|rubyurl\\.com|short\\.ie|smallr\\.com|snipr\\.com|snipurl\\.com|snurl\\.com|tinyurl\\.com|tr\\.im|twurl\\.nl|ub0\\.cc|ur1\\.ca|url\\.ie|urlx\\.ie|xrl\\.us|yep\\.it|zi\\.ma|zurl\\.ws)/.*"),
+  numberOfUrlsPerBatch : 4,
   lengthen : function(element) {
     var parent = (element == null) ? document : element ;
     var toLengthen = [];
@@ -18,7 +20,7 @@ var longurlplease = {
     }
     var subArray, i = 0;
     while (i < toLengthen.length) {
-      subArray = toLengthen.slice(i, i + 4)
+      subArray = toLengthen.slice(i, i + longurlplease.numberOfUrlsPerBatch)
       var paramString = "";
       for (var j = 0; j < subArray.length; j++) {
         var href = subArray[j];
@@ -44,10 +46,12 @@ var longurlplease = {
               );
       var request = new air.URLRequest("http://www.longurlplease.com/api/v1.1?ua=air&" + paramString);
       loader.load(request);
-      i = i + 4;
+      i = i + longurlplease.numberOfUrlsPerBatch;
     }
   },
   alterLink : function(a, longUrl) {
+    // You can customize this - my intention here is to alter the visible text to use as much of the long url
+    // as possible, but maintain the same number of characters to help keep visual consistancy.
     if (a.href == a.innerHTML) {
       var linkText = longUrl.replace(/^http(s?):\/\//, '').replace(/^www\./, '');
       a.innerHTML = linkText.substring(0, a.innerHTML.length - 3) + '...';
