@@ -1,28 +1,50 @@
 var longurlplease = {
   // At the moment clients must maintain a list of services which they will attempt to lengthen short urls for
-  shortUrlsPattern : new RegExp("^http(s?)://(adjix\\.com|bit\\.ly|dwarfurl\\.com|ff\\.im|idek\\.net|is\\.gd|ln-s\\.net|loopt\\.us|ping\\.fm|piurl\\.com|piurl\\.com|poprl\\.com|qlnk\\.net|reallytinyurl\\.com|rubyurl\\.com|short\\.ie|smallr\\.com|snipr\\.com|snipurl\\.com|snurl\\.com|tinyurl\\.com|tr\\.im|twurl\\.nl|ub0\\.cc|ur1\\.ca|url\\.ie|urlx\\.ie|xrl\\.us|yep\\.it|zi\\.ma|zurl\\.ws)/.*"),
+  shortUrlsPattern : new RegExp("^http(s?)://(bit\\.ly|dwarfurl\\.com|ff\\.im|idek\\.net|is\\.gd|ln-s\\.net|loopt\\.us|ping\\.fm|piurl\\.com|piurl\\.com|poprl\\.com|reallytinyurl\\.com|rubyurl\\.com|short\\.ie|smallr\\.com|snipr\\.com|snipurl\\.com|snurl\\.com|tinyurl\\.com|tr\\.im|twurl\\.nl|ur1\\.ca|url\\.ie|urlx\\.ie|xrl\\.us|yep\\.it|zi\\.ma|zurl\\.ws)/.*"),
   numberOfUrlsPerBatch : 4,
-  urlToElement : {},
-  lengthen : function(element) {
-    var parent = (element == null) ? document : element ;
-    var toLengthen = [];
-    var els = parent.getElementsByTagName('a');
-    for (var elIndex = 0; elIndex < els.length; elIndex++) {
-      var el = els[elIndex];
-      if (longurlplease.shortUrlsPattern.test(el.href)) {
-        toLengthen.push(el.href);
-        var listOfElements = longurlplease.urlToElement[el.href];
-        if (listOfElements == null)
-          listOfElements = []
-        listOfElements.push(el);
-        longurlplease.urlToElement[el.href] = listOfElements;
+  lengthen : function(options) {
+    if (typeof(options) == 'undefined')
+      options = {}
+    var parent = document;
+
+    var makeRequest = function() {
+      alert('not sure how to call api');
+    };
+    if (options.transport.toLowerCase() == 'air')
+      makeRequest = longurlplease.makeRequestWithAir;
+    else if (options.transport.toLowerCase() == 'flxhr')
+      makeRequest = longurlplease.makeRequestWithFlxhr;
+    else if (options.transport.toLowerCase() == 'jquery')
+      makeRequest = longurlplease.makeRequestWithJQuery;
+
+    var urlToElements = options.urlToElements;
+    var toLengthen = options.toLengthen;
+    if (toLengthen == null || urlToElements == null) {
+      urlToElements = {}
+      toLengthen = []
+      var els = parent.getElementsByTagName('a');
+      for (var elIndex = 0; elIndex < els.length; elIndex++) {
+        var el = els[elIndex];
+        if (longurlplease.shortUrlsPattern.test(el.href)) {
+          toLengthen.push(el.href);
+          var listOfElements = urlToElements[el.href];
+          if (listOfElements == null)
+            listOfElements = []
+          listOfElements.push(el);
+          urlToElements[el.href] = listOfElements;
+        }
       }
     }
+    var handleResponseEntry = function(shortUrl, longUrl) {
+      var aTags = urlToElements[shortUrl];
+      for (var ai = 0; ai < aTags.length; ai++)
+        longurlplease.alterLink(aTags[ai], longUrl);
+    };
     var subArray, i = 0;
     while (i < toLengthen.length) {
       subArray = toLengthen.slice(i, i + longurlplease.numberOfUrlsPerBatch)
       var paramString = longurlplease.toParamString(subArray);
-      longurlplease.makeRequest(paramString);
+      makeRequest(paramString, handleResponseEntry);
       i = i + longurlplease.numberOfUrlsPerBatch;
     }
   },
@@ -37,26 +59,6 @@ var longurlplease = {
     }
     return paramString;
   },
-  makeRequest : function(paramString) {
-    var loader = new air.URLLoader();
-    loader.addEventListener(air.Event.COMPLETE,
-            function (event) {
-              longurlplease.handleJsonResponse(event.target.data);
-            });
-    var request = new air.URLRequest("http://www.longurlplease.com/api/v1.1?ua=air&" + paramString);
-    loader.load(request);
-  },
-  handleJsonResponse : function(response) {
-    JSON.parse(response, function (key, val) {
-      if (typeof val === 'string' && val != null) {
-        var aTags = longurlplease.urlToElement[key];
-        for (var ai = 0; ai < aTags.length; ai++) {
-          aTag = aTags[ai];
-          longurlplease.alterLink(aTag, val);
-        }
-      }
-    });
-  },
   alterLink : function(a, longUrl) {
     // You can customize this - my intention here is to alter the visible text to use as much of the long url
     // as possible, but maintain the same number of characters to help keep visual consistancy.
@@ -65,5 +67,66 @@ var longurlplease = {
       a.innerHTML = linkText.substring(0, a.innerHTML.length - 3) + '...';
     }
     a.href = longUrl;
+  },
+  apiUrl : function() {
+    return (("https:" == document.location.protocol) ? "https" : "http") + "://longurlplease.appspot.com/api/v1.1";
+  },
+  makeRequestWithAir : function(paramString, callback) {
+    var loader = new air.URLLoader();
+    loader.addEventListener(air.Event.COMPLETE, function (event) {
+      JSON.parse(event.target.data, function (key, val) {
+        if (typeof val === 'string' && val != null)
+          callback(key, val);
+      });
+    });
+    var request = new air.URLRequest(longurlplease.apiUrl() + "?ua=air&" + paramString);
+    loader.load(request);
+  },
+  makeRequestWithFlxhr : function(paramString, callback) {
+    var flproxy = new flensed.flXHR({ autoUpdatePlayer:true, xmlResponseText:false, onreadystatechange:function (XHRobj) {
+      if (XHRobj.readyState == 4)
+        JSON.parse(XHRobj.responseText, function (key, val) {
+          if (typeof val === 'string' && val != null)
+            callback(key, val);
+        });
+    }});
+    flproxy.open("GET", longurlplease.apiUrl());
+    flproxy.send("ua=flxhr&" + paramString);
+  },
+  makeRequestWithJQuery : function(paramString, callback) {
+    jQuery.getJSON(longurlplease.apiUrl() + "?ua=jquery&" + paramString + "&callback=?",
+            function(data) {
+              jQuery.each(data, function(key, val) {
+                if (val != null)
+                  callback(key, val);
+              });
+            });
   }
+};
+
+if (typeof(jQuery) != 'undefined') {
+  jQuery.longurlplease = function(options) {
+    jQuery('body').longurlplease(options)
+  };
+  jQuery.fn.longurlplease = function(options) {
+    if (typeof(options) == 'undefined')
+      options = {}
+    options.transport = 'jquery';
+    var toLengthen = [];
+    var urlToElements = {};
+    this.find('a').filter(function() {
+      return this.href.match(longurlplease.shortUrlsPattern)
+    }).each(function() {
+      toLengthen.push(this.href);
+      var listOfElements = urlToElements[this.href];
+      if (listOfElements == null)
+        listOfElements = []
+      listOfElements.push(this);
+      urlToElements[this.href] = listOfElements;
+    });
+    options.toLengthen = toLengthen;
+    options.urlToElements = urlToElements;
+    longurlplease.lengthen(options);
+    return this;
+  };
 }
