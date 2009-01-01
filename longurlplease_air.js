@@ -35,10 +35,23 @@ var longurlplease = {
         }
       }
     }
+    var lengthenShortUrl = function(a, longUrl) {
+      // You can customize this - my intention here is to alter the visible text to use as much of the long url
+      // as possible, but maintain the same number of characters to help keep visual consistancy.
+      if (a.href == a.innerHTML) {
+        var linkText = longUrl.replace(/^http(s?):\/\//, '').replace(/^www\./, '');
+        a.innerHTML = linkText.substring(0, a.innerHTML.length - 3) + '...';
+      }
+      a.href = longUrl;
+      if(options.afterLengthen !=null)
+        options.afterLengthen(a,longUrl);
+    };
+    if (options.lengthenShortUrl != null)
+      lengthenShortUrl = options.lengthenShortUrl
     var handleResponseEntry = function(shortUrl, longUrl) {
       var aTags = urlToElements[shortUrl];
       for (var ai = 0; ai < aTags.length; ai++)
-        longurlplease.alterLink(aTags[ai], longUrl);
+        lengthenShortUrl(aTags[ai], longUrl);
     };
     var subArray, i = 0;
     while (i < toLengthen.length) {
@@ -58,15 +71,6 @@ var longurlplease = {
         paramString += '&'
     }
     return paramString;
-  },
-  alterLink : function(a, longUrl) {
-    // You can customize this - my intention here is to alter the visible text to use as much of the long url
-    // as possible, but maintain the same number of characters to help keep visual consistancy.
-    if (a.href == a.innerHTML) {
-      var linkText = longUrl.replace(/^http(s?):\/\//, '').replace(/^www\./, '');
-      a.innerHTML = linkText.substring(0, a.innerHTML.length - 3) + '...';
-    }
-    a.href = longUrl;
   },
   apiUrl : function() {
     return (("https:" == document.location.protocol) ? "https" : "http") + "://longurlplease.appspot.com/api/v1.1";
