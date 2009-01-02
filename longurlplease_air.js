@@ -5,7 +5,7 @@ var longurlplease = {
   lengthen : function(options) {
     if (typeof(options) == 'undefined')
       options = {}
-    var parent = document;
+
 
     var makeRequest = function() {
       alert('not sure how to call api');
@@ -20,8 +20,11 @@ var longurlplease = {
     var urlToElements = options.urlToElements;
     var toLengthen = options.toLengthen;
     if (toLengthen == null || urlToElements == null) {
-      urlToElements = {}
-      toLengthen = []
+      var parent = document;
+      if(options.element != null)
+        parent = options.element;
+      urlToElements = {};
+      toLengthen = [];
       var els = parent.getElementsByTagName('a');
       for (var elIndex = 0; elIndex < els.length; elIndex++) {
         var el = els[elIndex];
@@ -43,8 +46,6 @@ var longurlplease = {
         a.innerHTML = linkText.substring(0, a.innerHTML.length - 3) + '...';
       }
       a.href = longUrl;
-      if(options.afterLengthen !=null)
-        options.afterLengthen(a,longUrl);
     };
     if (options.lengthenShortUrl != null)
       lengthenShortUrl = options.lengthenShortUrl
