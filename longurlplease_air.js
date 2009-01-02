@@ -1,6 +1,6 @@
 var longurlplease = {
   // At the moment clients must maintain a list of services which they will attempt to lengthen short urls for
-  shortUrlsPattern : new RegExp("^http(s?)://(bit\\.ly|dwarfurl\\.com|ff\\.im|idek\\.net|is\\.gd|ln-s\\.net|loopt\\.us|ping\\.fm|piurl\\.com|piurl\\.com|poprl\\.com|reallytinyurl\\.com|rubyurl\\.com|short\\.ie|smallr\\.com|snipr\\.com|snipurl\\.com|snurl\\.com|tinyurl\\.com|tr\\.im|twurl\\.nl|ur1\\.ca|url\\.ie|urlx\\.ie|xrl\\.us|yep\\.it|zi\\.ma|zurl\\.ws)/.*"),
+  shortUrlsPattern : new RegExp("^http(s?)://(bit\\.ly|cli\\.gs|dwarfurl\\.com|ff\\.im|idek\\.net|is\\.gd|korta\\.nu|ln-s\\.net|loopt\\.us|moourl\\.com|ping\\.fm|piurl\\.com|poprl\\.com|reallytinyurl\\.com|rubyurl\\.com|short\\.ie|smallr\\.com|snipr\\.com|snipurl\\.com|snurl\\.com|tinyurl\\.com|tr\\.im|twurl\\.nl|u\\.mavrev.com|ur1\\.ca|url\\.ie|urlx\\.ie|xrl\\.us|yep\\.it|zi\\.ma|zurl\\.ws)/.*"),
   numberOfUrlsPerBatch : 4,
   lengthen : function(options) {
     if (typeof(options) == 'undefined')
