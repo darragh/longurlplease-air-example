@@ -1,6 +1,6 @@
 var longurlplease = {
   // At the moment clients must maintain a list of services which they will attempt to lengthen short urls for
-  shortUrlsPattern : new RegExp("^http(s?)://(bit\\.ly|cli\\.gs|dwarfurl\\.com|ff\\.im|idek\\.net|is\\.gd|korta\\.nu|ln-s\\.net|loopt\\.us|moourl\\.com|ping\\.fm|piurl\\.com|poprl\\.com|reallytinyurl\\.com|rubyurl\\.com|short\\.ie|smallr\\.com|snipr\\.com|snipurl\\.com|snurl\\.com|tinyurl\\.com|tr\\.im|twurl\\.nl|u\\.mavrev.com|ur1\\.ca|url\\.ie|urlx\\.ie|xrl\\.us|yep\\.it|zi\\.ma|zurl\\.ws)/.*"),
+  shortUrlsPattern : new RegExp("^http(s?)://(b23\\.ru|bit\\.ly|cli\\.gs|dwarfurl\\.com|ff\\.im|idek\\.net|is\\.gd|korta\\.nu|ln-s\\.net|loopt\\.us|moourl\\.com|ping\\.fm|piurl\\.com|poprl\\.com|reallytinyurl\\.com|rubyurl\\.com|short\\.ie|smallr\\.com|snipr\\.com|snipurl\\.com|snurl\\.com|tinyurl\\.com|tr\\.im|twurl\\.nl|u\\.mavrev.com|ur1\\.ca|url\\.ie|urlx\\.ie|xrl\\.us|yep\\.it|zi\\.ma|zurl\\.ws)/.*"),
   numberOfUrlsPerBatch : 4,
   lengthen : function(options) {
     if (typeof(options) == 'undefined')
@@ -88,7 +88,7 @@ var longurlplease = {
     loader.load(request);
   },
   makeRequestWithFlxhr : function(paramString, callback) {
-    var flproxy = new flensed.flXHR({ autoUpdatePlayer:true, xmlResponseText:false, onreadystatechange:function (XHRobj) {
+    var flproxy = new flensed.flXHR({ autoUpdatePlayer:true, xmlResponseText:false, instancePooling:true, onreadystatechange:function (XHRobj) {
       if (XHRobj.readyState == 4)
         JSON.parse(XHRobj.responseText, function (key, val) {
           if (typeof val === 'string' && val != null)
